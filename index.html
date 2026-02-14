@@ -71,7 +71,6 @@ body {
     opacity: 0.5;
 }
 
-/* "Are you kidding?" */
 .kidding-msg {
     position: absolute;
     font-size: clamp(1.5rem, 6vw, 2.2rem);
@@ -190,7 +189,7 @@ svg { width: 0; height: 0; position: absolute; }
 }
 
 .showLove {
-    animation: popLove 10s ease forwards;
+    animation: popLove 8s ease forwards;
 }
 
 @keyframes popLove {
@@ -245,17 +244,45 @@ svg { width: 0; height: 0; position: absolute; }
 
     <div id="finalMessage">Yaay! See you at breakfast!😙</div>
 	<div id="lovePop">
-    <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWl3cGdrdGxscTg0dTkzaHhvNjJpd2Ntajl6aWtwdDI4cm1zbjd1aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2QwqAiIoQYBBTZjHtb/giphy.gif" alt="love">
+		<img id="loveGif" src="" alt="reaction">
+	</div>
 </div>
 </div>
 
 <script>
 let scale = 1;
+let noCount = 0;
+
+// GIFs
+const gifs = {
+    no1: "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXNlNXk4Mnk2bjB5eWQycmdtbXZnZ2hwMnJqMWRtODN1ZXlrMG1yOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ONZvDqZYGvUju/giphy.gif",
+    no2: "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3BwY3gyZWQxMmkzMGx3em1zZjVuaWx6bHdqZ2luMzJ1ZXFyeTRjeSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ZaMG7R7Kq0VkRsENly/giphy.gif",
+    no3: "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2tyNzJ3MGFuang3bDhoNWF2M3N2cHA1NzE0OHVmM2lmZjAycmptcyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/RlwEzSIx05FRNvr7Vu/giphy.gif",
+    yes: "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWl3cGdrdGxscTg0dTkzaHhvNjJpd2Ntajl6aWtwdDI4cm1zbjd1aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2QwqAiIoQYBBTZjHtb/giphy.gif"
+};
 
 function onNo() {
+    noCount++;
+
+    const kidding = document.getElementById('kidding');
+
+    if (noCount === 1) {
+        kidding.textContent = "Really? 🥺";
+        showGif(gifs.no1);
+    } 
+    else if (noCount === 2) {
+        kidding.textContent = "Please? 🥺😭";
+        showGif(gifs.no2);
+    } 
+    else {
+        kidding.textContent = "It's just sad now 😔";
+        showGif(gifs.no3);
+    }
+
+    kidding.classList.add('show-kidding');
+
     document.getElementById('leftHalf').classList.add('break-left');
     document.getElementById('rightHalf').classList.add('break-right');
-    document.getElementById('kidding').classList.add('show-kidding');
 
     const noBtn = document.getElementById('noBtn');
     noBtn.classList.remove('thudder');
@@ -268,11 +295,14 @@ function onNo() {
     setTimeout(() => {
         document.getElementById('leftHalf').classList.remove('break-left');
         document.getElementById('rightHalf').classList.remove('break-right');
-        document.getElementById('kidding').classList.remove('show-kidding');
-    }, 1200);
+        kidding.classList.remove('show-kidding');
+    }, 5000);
 }
 
 function onYes() {
+
+    showGif(gifs.yes);
+
     confetti({
         particleCount: window.innerWidth < 500 ? 100 : 150,
         spread: 70,
@@ -287,14 +317,23 @@ function onYes() {
     document.getElementById('leftHalf').classList.remove('break-left');
     document.getElementById('rightHalf').classList.remove('break-right');
     document.getElementById('kidding').style.display = 'none';
-	
-	const love = document.getElementById('lovePop');
-	love.classList.add('showLove');
-
-	setTimeout(() => {
-		love.classList.remove('showLove');
-	}, 10000);
 }
+
+function showGif(gifUrl) {
+    const gifContainer = document.getElementById('lovePop');
+    const gifImg = document.getElementById('loveGif');
+
+    gifImg.src = gifUrl;
+
+    gifContainer.classList.remove('showLove');
+    void gifContainer.offsetWidth; // restart animation
+    gifContainer.classList.add('showLove');
+
+    setTimeout(() => {
+        gifContainer.classList.remove('showLove');
+    }, 10000); // matches your 10s animation
+}
+
 </script>
 
 </body>
