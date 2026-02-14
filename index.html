@@ -76,8 +76,8 @@ body {
     font-size: clamp(1.5rem, 6vw, 2.2rem);
     font-weight: 900;
     color: #ff4d6d;
-    opacity: 0;
-    transform: scale(0.5);
+    opacity: 1;
+    transform: scale(0.8);
     transition: all 0.4s ease;
     z-index: 1;
     width: 100%;
@@ -189,7 +189,7 @@ svg { width: 0; height: 0; position: absolute; }
 }
 
 .showLove {
-    animation: popLove 8s ease forwards;
+    animation: popLove 5s ease forwards;
 }
 
 @keyframes popLove {
@@ -211,6 +211,15 @@ svg { width: 0; height: 0; position: absolute; }
         transform: translateX(-50%) scale(0);
         opacity: 0;
     }
+}
+
+button:disabled {
+    background-color: #888888; /* grey color */
+    color: #ffffff; /* optional, keeps text readable */
+    cursor: not-allowed;
+    opacity: 0.5; /* subtle transparency */
+    transform: none !important; /* prevent shake scaling */
+    box-shadow: none; /* remove shadows while disabled */
 }
 </style>
 </head>
@@ -319,19 +328,36 @@ function onYes() {
     document.getElementById('kidding').style.display = 'none';
 }
 
+let gifTimeout;
+
 function showGif(gifUrl) {
     const gifContainer = document.getElementById('lovePop');
     const gifImg = document.getElementById('loveGif');
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
 
+    // Change the GIF
     gifImg.src = gifUrl;
 
+    // Disable buttons
+    yesBtn.disabled = true;
+    noBtn.disabled = true;
+
+    // Remove class and clear previous timeout to restart animation safely
     gifContainer.classList.remove('showLove');
-    void gifContainer.offsetWidth; // restart animation
+    if (gifTimeout) clearTimeout(gifTimeout);
+
+    // Force reflow to restart CSS animation
+    void gifContainer.offsetWidth;
     gifContainer.classList.add('showLove');
 
-    setTimeout(() => {
+    // Re-enable buttons after animation ends
+    gifTimeout = setTimeout(() => {
         gifContainer.classList.remove('showLove');
-    }, 10000); // matches your 10s animation
+        yesBtn.disabled = false;
+        noBtn.disabled = false;
+        gifTimeout = null;
+    }, 5000); // Adjust duration to match your animation
 }
 
 </script>
