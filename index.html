@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Valentine's Proposal</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+body {
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.container {
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Responsive Heart */
+.heart-box {
+    position: relative;
+    width: 80vw;
+    max-width: 320px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.heart-half {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url('img.png');
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
+}
+
+/* Heart clipping */
+.left {
+    clip-path: url(#clip-left);
+    z-index: 2;
+}
+
+.right {
+    clip-path: url(#clip-right);
+    z-index: 2;
+}
+
+/* Break animation */
+.break-left {
+    transform: translateX(-60px) translateY(-20px) rotate(-20deg);
+    opacity: 0.5;
+}
+
+.break-right {
+    transform: translateX(60px) translateY(-20px) rotate(20deg);
+    opacity: 0.5;
+}
+
+/* "Are you kidding?" */
+.kidding-msg {
+    position: absolute;
+    font-size: clamp(1.5rem, 6vw, 2.2rem);
+    font-weight: 900;
+    color: #ff4d6d;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.4s ease;
+    z-index: 1;
+    width: 100%;
+    pointer-events: none;
+}
+
+.show-kidding {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Question text */
+h1 {
+    color: #333;
+    font-size: clamp(1.2rem, 5vw, 1.8rem);
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
+
+/* Buttons */
+.btn-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 14px 28px;
+    font-size: 1rem;
+    font-weight: bold;
+    min-width: 120px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+#yesBtn {
+    background-color: #28a745;
+    color: white;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+#noBtn {
+    background-color: #dc3545;
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+/* Stack buttons on very small screens */
+@media (max-width: 380px) {
+    .btn-group {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+        max-width: 220px;
+    }
+}
+
+/* Shake animation */
+.thudder {
+    animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(4px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+    40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+/* Final message */
+#finalMessage {
+    display: none;
+    font-size: 1.3rem;
+    color: #ff4d6d;
+    font-weight: bold;
+    margin-top: 20px;
+    animation: fadeIn 1s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Hidden SVG */
+svg { width: 0; height: 0; position: absolute; }
+
+#lovePop {
+    position: fixed;
+    bottom: 20%;
+    left: 50%;
+	margin-top: 80vw;
+    transform: translateX(-50%) scale(0);
+    opacity: 0;
+    z-index: 999;
+    pointer-events: none;
+}
+
+#lovePop img {
+    width: 150px;
+    max-width: 40vw;
+
+}
+
+.showLove {
+    animation: popLove 10s ease forwards;
+}
+
+@keyframes popLove {
+    0% {
+        transform: translateX(-50%) scale(0);
+        opacity: 0;
+    }
+    20% {
+        transform: translateX(-50%) scale(1.2);
+        opacity: 1;
+    }
+    40% {
+        transform: translateX(-50%) scale(1);
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-50%) scale(0);
+        opacity: 0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<svg viewBox="0 0 1 1">
+    <defs>
+        <clipPath id="clip-left" clipPathUnits="objectBoundingBox">
+            <path d="M0.5,1 C0.5,1,0,0.7,0,0.35 A0.25,0.25,0,0,1,0.5,0.35 L0.5,1 Z" />
+        </clipPath>
+        <clipPath id="clip-right" clipPathUnits="objectBoundingBox">
+            <path d="M0.5,1 C0.5,1,1,0.7,1,0.35 A0.25,0.25,0,0,0,0.5,0.35 L0.5,1 Z" />
+        </clipPath>
+    </defs>
+</svg>
+
+<div class="container">
+    <div class="heart-box">
+        <div class="kidding-msg" id="kidding">ARE YOU KIDDING me? 😢</div>
+        <div class="heart-half left" id="leftHalf"></div>
+        <div class="heart-half right" id="rightHalf"></div>
+    </div>
+
+    <h1 id="question">Will you be my valentine?</h1>
+
+    <div class="btn-group" id="buttons">
+        <button id="yesBtn" onclick="onYes()">YES</button>
+        <button id="noBtn" onclick="onNo()">NO</button>
+    </div>
+
+    <div id="finalMessage">Yaay! See you at breakfast!</div>
+	<div id="lovePop">
+    <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWl3cGdrdGxscTg0dTkzaHhvNjJpd2Ntajl6aWtwdDI4cm1zbjd1aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2QwqAiIoQYBBTZjHtb/giphy.gif" alt="love">
+</div>
+</div>
+
+<script>
+let scale = 1;
+
+function onNo() {
+    document.getElementById('leftHalf').classList.add('break-left');
+    document.getElementById('rightHalf').classList.add('break-right');
+    document.getElementById('kidding').classList.add('show-kidding');
+
+    const noBtn = document.getElementById('noBtn');
+    noBtn.classList.remove('thudder');
+    void noBtn.offsetWidth;
+    noBtn.classList.add('thudder');
+
+    scale += 0.4;
+    document.getElementById('yesBtn').style.transform = `scale(${scale})`;
+
+    setTimeout(() => {
+        document.getElementById('leftHalf').classList.remove('break-left');
+        document.getElementById('rightHalf').classList.remove('break-right');
+        document.getElementById('kidding').classList.remove('show-kidding');
+    }, 1200);
+}
+
+function onYes() {
+    confetti({
+        particleCount: window.innerWidth < 500 ? 100 : 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#ff4d6d', '#ff758f', '#ffffff', '#28a745']
+    });
+
+    document.getElementById('buttons').style.display = 'none';
+    document.getElementById('question').style.display = 'none';
+    document.getElementById('finalMessage').style.display = 'block';
+
+    document.getElementById('leftHalf').classList.remove('break-left');
+    document.getElementById('rightHalf').classList.remove('break-right');
+    document.getElementById('kidding').style.display = 'none';
+	
+	const love = document.getElementById('lovePop');
+	love.classList.add('showLove');
+
+	setTimeout(() => {
+		love.classList.remove('showLove');
+	}, 10000);
+}
+</script>
+
+</body>
+</html>
